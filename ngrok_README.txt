@@ -3,6 +3,10 @@
 3. Sau khi đăng ký, bạn sẽ cần xác minh địa chỉ email của mình.
 4. Sau khi đã xác minh tài khoản, truy cập https://dashboard.ngrok.com/get-started/your-authtoken để lấy authtoken của bạn.
 5. Mở terminal trên máy tính của bạn và chạy lệnh sau (thay YOUR_AUTHTOKEN bằng authtoken thật của bạn): ngrok config add-authtoken YOUR_AUTHTOKEN
+
+npm install electron
+npm install sortablejs
+
 6. Tạo file local.py trên local: (nên để local.py và file ngrok cùng 1 folder)
 
 from flask import Flask, request
