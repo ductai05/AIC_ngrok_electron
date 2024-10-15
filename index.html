@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>KEYFRAME MANAGEMENT</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -12,6 +13,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+            margin-top: 20px;
         }
         .image-item {
             position: relative;
@@ -25,26 +27,108 @@
             height: 100%;
             object-fit: cover;
         }
-        .delete-btn {
+        .image-info {
             position: absolute;
-            top: 5px;
-            right: 5px;
-            background-color: red;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
             color: white;
-            border: none;
-            padding: 5px 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .image-item:hover .image-info {
+            opacity: 1;
+        }
+        .fa-close, .fa-youtube-play, .fa-arrow-circle-up {
+            position: absolute;
+            color: white;
             cursor: pointer;
         }
+        .fa-close {
+            top: 5px;
+            right: 5px;
+            padding: 5px;
+            background-color: red;
+        }
+        .fa-youtube-play {
+            bottom: 0px;
+            left: 0px;
+            padding: 4px;
+            background-color: red;
+        }
+        .fa-arrow-circle-up {
+            bottom: 22px;
+            left: 0px;
+            padding: 5px;
+            background-color: green;
+        }
     </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Popup YouTube</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
 
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            position: relative;
+            width: 70vw; 
+            height: 80vh;
+            background-color: white;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%; 
+        }
+    </style>
 </head>
-<body class="w3-light-grey w3-content" style="max-width:1600px">
-    <!-- Setup -->
+<div class="modal" id="videoModal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>  
+<body class="w3-light-grey w3-content" style="max-width:1600px", onload="check()">
     <input type="file" id="csvFile" accept=".csv" style="display: none;">
-    <div id="imageContainer" class="image-container"></div>
 
     <!-- Sidebar/menu -->
-    <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:200px;" id="mySidebar"><br>
+    <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:100px;" id="mySidebar"><br>
         <div class="w3-container">
             <a href="#" onclick="w3_close()" class="w3-hide-large w3-right w3-jumbo w3-padding w3-hover-grey" title="close menu">
                 <i class="fa fa-remove"></i>
@@ -62,7 +146,7 @@
     <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
 
     <!-- !PAGE CONTENT! -->
-    <div class="w3-main" style="margin-left:200px">
+    <div class="w3-main" style="margin-left:100px">
 
         <!-- Header -->
         <header id="WATLERE">
@@ -73,47 +157,46 @@
                 <div class="w3-section w3-bottombar w3-padding-16">
                     <span class="w3-margin-right">Function:</span>
                     <button class="w3-button w3-teal" onclick="importFile()"><i class="fa fa-download w3-margin-right"></i>Import CSV</button>
-                    <button class="w3-button w3-teal"><i class="fa fa-upload w3-margin-right"></i>Export CSV</button>
-                    <button class="w3-button w3-teal"><i class="fa fa-refresh w3-margin-right"></i>Reset</button>
-                    <!--
-                    <button class="w3-button w3-teal w3-padding-large w3-hover-black">Sign Up</button>
-                    <label>Name</label>
-                    <input class="w3-input w3-border" type="text" name="Name" required>
-                    -->
+                    <button class="w3-button w3-teal" onclick="exportCSV()"><i class="fa fa-upload w3-margin-right"></i>Export CSV</button>
+                    <button class="w3-button w3-teal" onclick="reset()"><i class="fa fa-refresh w3-margin-right"></i>Reset</button>
                 </div>
             </div>
         </header>
 
-        <!-- First Photo Grid-->
-        <div class="w3-row-padding">
-            <div class="w3-third w3-container w3-margin-bottom">
-                <img src="https://www.w3schools.com/w3images/mountains.jpg" alt="Norway" style="width:100%" class="w3-hover-opacity">
-                <div class="w3-container w3-white">
-                    <p><b>Lorem Ipsum</b></p>
-                    <p>Praesent tincidunt sed tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue gravida diam non fringilla.</p>
-                </div>
-            </div>
-            <div class="w3-third w3-container w3-margin-bottom">
-                <img src="https://www.w3schools.com/w3images/lights.jpg" alt="Norway" style="width:100%" class="w3-hover-opacity">
-                <div class="w3-container w3-white">
-                    <p><b>Lorem Ipsum</b></p>
-                    <p>Praesent tincidunt sed tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue gravida diam non fringilla.</p>
-                </div>
-            </div>
-            <div class="w3-third w3-container">
-                <img src="https://www.w3schools.com/w3images/nature.jpg" alt="Norway" style="width:100%" class="w3-hover-opacity">
-                <div class="w3-container w3-white">
-                    <p><b>Lorem Ipsum</b></p>
-                    <p>Praesent tincidunt sed tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue gravida diam non fringilla.</p>
-                </div>
-            </div>
-        </div>
+        <!-- Image Container -->
+        <div id="imageContainer" class="image-container"></div>
 
         <!-- End page content -->
     </div>
 
     <script>
-        // Script to open and close sidebar
+        const fs = require('fs');
+        const path = require('path');
+        const chokidar = require('chokidar');
+        
+        let images = [];
+        function check(){
+            const watcher = chokidar.watch('./uploads', { persistent: true });
+            watcher.on('add', (filePath) => {
+                console.log(`File path: ${filePath}`)
+                if (path.extname(filePath) === '.csv') {
+                    loadImagesFromPath(filePath);
+                }
+            });
+        }
+
+        function loadImagesFromPath(filePath) {
+            fs.readFile(filePath, 'utf8', (err, data) => {
+                if (err) {
+                    console.error('Error reading CSV file:', err);
+                    return;
+                }
+                processCSV(data)
+                console.log(data);
+            });
+        }
+
+        // // Script to open and close sidebar
         function w3_open() {
             document.getElementById("mySidebar").style.display = "block";
             document.getElementById("myOverlay").style.display = "block";
@@ -124,14 +207,19 @@
             document.getElementById("myOverlay").style.display = "none";
         }
 
-        let images = [];
-        // Script load file CSV from locally
+        // let images = [];
+
+        // Script Load file CSV
+        let name_csv = 'new.csv';
+
         function importFile() {
             const input = document.getElementById('csvFile');
             input.click();
 
             input.onchange = function(event) {
                 const file = event.target.files[0];
+                name_csv = file.name;
+
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
@@ -145,53 +233,89 @@
 
         function processCSV(contents) {
             const lines = contents.split('\n');
-            images = lines.filter(line => line.trim() !== '').map(line => line.trim());
+            images = lines.filter(line => line.trim() !== '').map(line => {
+                const [folder, frame, youtubeLink] = line.trim().split(',');
+                const parts = folder.split('_');
+                const imagePath = `D:\\Data\\Keyframe_TransnetV2\\${parts[0]}\\${parts[1]}\\frame_${frame}.jpg`;
+
+                return {
+                    path: imagePath,
+                    folder: parts[0],
+                    index: parts[1],
+                    frame: frame,
+                    youtubeLink: youtubeLink 
+                };
+            });
             displayImages();
         }
 
-        // Script load file CSV from server
-        const fs = require('fs');
-        const path = require('path');
-        const { ipcRenderer } = require('electron');
-
-        ipcRenderer.on('new-csv-file', (event, filePath) => {
-            loadImagesFromPath(filePath);
-        });
-
-        function loadImagesFromPath(filePath) {
-            fs.readFile(filePath, 'utf8', (err, data) => {
-                if (err) {
-                    console.error('Error reading CSV file:', err);
-                    return;
-                }
-                const lines = data.split('\n');
-                images = lines.filter(line => line.trim() !== '').map(line => line.trim());
-                displayImages();
-            });
-        }
-
+        // Scripts display Images
         function displayImages() {
             const container = document.getElementById('imageContainer');
             container.innerHTML = '';
             images.forEach((imagePath, index) => {
                 const div = document.createElement('div');
-                div.className = 'image-item';
+                div.className = 'w3-third w3-container w3-margin-bottom image-item';
                 div.innerHTML = `
-                    <img src="${imagePath}" alt="Image ${index + 1}">
-                    <button class="delete-btn" onclick="deleteImage(${index})">Xóa</button>
+                    <img src="${imagePath.path}" alt="Image ${index}" style="width:100%" class="w3-hover-opacity">
+                    <div class="image-info">
+                        <p><b>${index}::${imagePath.folder}_${imagePath.index}_${imagePath.frame}</b></p>
+                    </div>
+                    <div class="w3-container w3-white">
+                        <p><b>Image ${index}</b></p>
+                        <p>Not found!</p>
+                    </div>
+                    <i class="fa fa-close" onclick="deleteImage(${index})"></i>
+                    <i class="fa fa-arrow-circle-up" onclick="upTop(${index})"></i>
+                    <i class="fa fa-youtube-play" onclick="youtubePlay(${index})"></i>
                 `;
                 container.appendChild(div);
             });
+        }
 
-            // Khởi tạo Sortable cho container
-            const Sortable = require('sortablejs');
-            Sortable.create(container, {
-                animation: 150,
-                onEnd: (evt) => {
-                    const movedItem = images.splice(evt.oldIndex, 1)[0];
-                    images.splice(evt.newIndex, 0, movedItem);
-                }
+        // Scripts Export CSV
+        function exportCSV() {
+            const csvRows = [];
+            images.forEach(image => {
+                const row = `${image.folder}_${image.index},${image.frame}`;
+                csvRows.push(row);
             });
+
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `${name_csv}`);
+            a.click();
+
+            URL.revokeObjectURL(url);
+        }
+
+        // Scripts function button
+        function viewDetails(index) {
+            const image = images[index];
+            alert(`Details of Image ${index}:\nPath: ${image.path}\nFolder: ${image.folder}\nIndex: ${image.index}\nFrame: ${image.frame}`);
+        }
+
+        function youtubePlay(index) {
+            const image = images[index];
+            if (image.youtubeLink) {
+                const autoplayLink = image.youtubeLink + '?autoplay=1';
+                document.getElementById('videoFrame').src = autoplayLink;
+                document.getElementById('videoModal').style.display = 'flex';
+            } else {
+                alert('No YouTube link available for this image.');
+            }
+        }
+
+        function upTop(index) {
+            if (index > 0) {
+                const imageToMove = images.splice(index, 1)[0];
+                images.unshift(imageToMove);
+                displayImages();
+            }
         }
 
         function deleteImage(index) {
@@ -199,6 +323,20 @@
             displayImages();
         }
 
+        function reset() {
+            images = [];
+            displayImages();
+        }
+        function closeModal() {
+            document.getElementById('videoModal').style.display = 'none';
+            document.getElementById('videoFrame').src = '';
+        }
+        window.onclick = function(event) {
+        const modal = document.getElementById('videoModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
     </script>
 
 </body>
