@@ -214,12 +214,12 @@
 
         function importFile() {
             const input = document.getElementById('csvFile');
+            input.value = '';
             input.click();
 
             input.onchange = function(event) {
                 const file = event.target.files[0];
                 name_csv = file.name;
-
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
